@@ -165,8 +165,24 @@ else ifeq ($(platform), ctr)
    STATIC_LINKING = 1
    FLAGS += -D_3DS
 
-# Switch (libtransistor)
+# Switch (libnx)
 else ifeq ($(platform), switch)
+include $(DEVKITPRO)/libnx/switch_rules
+    EXT=a
+    TARGET := $(TARGET_NAME)_libretro_$(platform).$(EXT)
+    DEFINES := -DSWITCH=1 -U__linux__ -U__linux -DRARCH_INTERNAL
+    CFLAGS	:=	 $(DEFINES) -g \
+                -O2 \
+				-fPIE -I$(LIBNX)/include/ -ffunction-sections -fdata-sections -ftls-model=local-exec -Wl,--allow-multiple-definition -specs=$(LIBNX)/switch.specs
+    CFLAGS += $(INCDIRS)
+    CFLAGS	+=	$(INCLUDE)  -D__SWITCH__
+    CXXFLAGS := $(ASFLAGS) $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++11
+    CFLAGS += -std=gnu11
+    STATIC_LINKING = 1
+    fpic := -nostdlib
+
+# Switch (libtransistor)
+else ifeq ($(platform), switch-transistor)
 	TARGET := $(TARGET_NAME)_libretro_switch.a
 	include $(LIBTRANSISTOR_HOME)/libtransistor.mk
 	STATIC_LINKING=1
